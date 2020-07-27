@@ -13,10 +13,13 @@ Séries
 <ul class="list-group">
 
     @foreach ($series as $serie)
-    <form method="post" onsubmit="return confirm('Tem certeza que deseja remover a série {{ addslashes($serie->nome)}} ?')" action="/series/remove/{{$serie->id}}" >
+    <form class="" method="post"
+        onsubmit="return confirm('Tem certeza que deseja remover a série {{ addslashes($serie->nome)}} ?')"
+        action="/series/remove/{{$serie->id}}">
         @csrf
         @method('DELETE')
-        <li class="list-group-item">{{$serie->nome}}
+        <li class="list-group-item d-flex  justify-content-between">
+            <span>{{$serie->nome}}</span>
             <button type="submit" class="btn btn-danger">Excluir</button>
     </form>
     @endforeach
