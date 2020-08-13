@@ -22,6 +22,15 @@ class SeriesController extends Controller
         return view('series.create');
     }
 
+    public function update(int $id, Request $request)
+    {
+        $novoNome = $request->nome;
+
+        $serie = Serie::find($id);
+        $serie->nome = $novoNome;
+        $serie->save();
+    }
+
     public function store(SeriesFormRequest $request, CriadorDeSerie $criadorDeSerie)
     {
         $serie = $criadorDeSerie->criarSerie($request->nome, $request->qtd_temporadas, $request->ep_por_temporadas);

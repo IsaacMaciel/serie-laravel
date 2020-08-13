@@ -13,6 +13,6 @@ Route::get('/series/create', 'SeriesController@create')
 
 Route::post('/series/create', 'SeriesController@store');
 Route::delete('/series/remove/{id}', 'SeriesController@destroy');
+Route::post('/series/{id}/editaNome', 'SeriesController@update');
 
-Route::get('/series/{seriesId}/temporadas','TemporadasController@index');
-
+Route::get('/series/{seriesId}/temporadas', 'TemporadasController@index');
