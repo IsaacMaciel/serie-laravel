@@ -20,7 +20,17 @@ Séries
         @method('DELETE')
         <li class="list-group-item d-flex  justify-content-between">
             <span>{{$serie->nome}}</span>
-            <button type="submit" class="btn btn-danger">Excluir</button>
+            <span>
+                <a href="/series/{{$serie->id}}/temporadas" class="btn btn-info btn-sm"> <span class="material-icons">
+                        input
+                    </span></a>
+                <button type="submit" class="btn btn-danger btn-sm">
+                    <span class="material-icons">
+                        delete
+                    </span>
+                </button>
+
+            </span>
     </form>
     @endforeach
 

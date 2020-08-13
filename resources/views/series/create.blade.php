@@ -14,9 +14,22 @@ Adicionar Série
         </ul>
     </div>
     @endif
-    <div class="form-group">
-        <label for="nome"> Nome </label>
-        <input type="text" name="nome" class="form-control" id="">
+    <div class="row align-items-center">
+        <div class="form-group col col-6">
+            <label for="nome"> Nome </label>
+            <input type="text" name="nome" class="form-control" id="">
+        </div>
+
+        <div class="form-group col col-3">
+            <label for="qtd_temporadas"> Nº Temporadas </label>
+            <input type="number" name="qtd_temporadas" class="form-control" id="">
+        </div>
+
+        <div class="form-group col col-3">
+            <label for="ep_por_temporadas"> Ep por Temporadas </label>
+            <input type="number" name="ep_por_temporadas" class="form-control" id="">
+        </div>
+
     </div>
     <div class="footer d-flex justify-content-between">
         <a class="btn btn-dark" href={{route('listar_series')}}>Voltar</a>

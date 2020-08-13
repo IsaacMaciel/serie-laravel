@@ -3,6 +3,8 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\SeriesFormRequest;
 use App\Serie;
+use App\Services\CriadorDeSerie;
+use App\Services\RemovedorDeSerie;
 use Illuminate\Http\Request;
 
 class SeriesController extends Controller
@@ -20,21 +22,19 @@ class SeriesController extends Controller
         return view('series.create');
     }
 
-    public function store(SeriesFormRequest $request)
+    public function store(SeriesFormRequest $request, CriadorDeSerie $criadorDeSerie)
     {
-        $nome = $request->nome;
-        $serie = Serie::create([
-            'nome' => $nome,
-        ]);
+        $serie = $criadorDeSerie->criarSerie($request->nome, $request->qtd_temporadas, $request->ep_por_temporadas);
+
         $request->session()->flash('mensagem', "Série {$serie->id} criada com sucesso {$serie->nome}");
 
         return redirect()->route('listar_series');
     }
 
-    public function destroy(Request $request)
+    public function destroy(Request $request, RemovedorDeSerie $removedorDeSerie)
     {
-        Serie::destroy($request->id);
-        $request->session()->flash('mensagem','Serie removida com sucesso');
+        $nomeSerie = $removedorDeSerie->removerSerie($request->id);
+        $request->session()->flash('mensagem', "Serie $nomeSerie removida com sucesso");
 
         return redirect()->route('listar_series');
 
