@@ -9,8 +9,10 @@ use Illuminate\Http\Request;
 
 class SeriesController extends Controller
 {
+
     public function index(Request $request)
     {
+
         $mensagem = $request->session()->get('mensagem');
 
         $series = Serie::query()->orderBy('nome')->get();

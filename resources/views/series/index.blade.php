@@ -4,11 +4,7 @@ Séries
 @endsection
 
 @section('conteudo')
-@if ($mensagem)
-<div class="alert alert-success">
-    {{$mensagem}}
-</div>
-@endif
+@include('mensagem',['mensagem' => $mensagem])
 <a href={{route('form_create_serie')}} class="btn btn-dark mb-3">Adicionar </a>
 <ul class="list-group">
 
