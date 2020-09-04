@@ -1,25 +1,26 @@
 @extends('layout')
 
 @section('cabecalho')
-Episódios
+    Episódios
 @endsection
 
 @section('conteudo')
-@include('mensagem',['mensagem' => $mensagem])
+    @include('mensagem', ['mensagem' => $mensagem])
 
-<form action="/temporadas/{{$temporadaId}}/episodios/assistir" method="post">
-    @csrf
-    @foreach ($episodios as $episodio)
-    <ul class="list-group">
-        <li class="list-group-item d-flex justify-content-between align-items-center mb-1">
-            Episódio {{$episodio->numero}}
-            <input type="checkbox" name="episodios[]" {{$episodio->assistido ? 'checked' : ''}}
-                value="{{$episodio->id}}" id="">
-        </li>
-        @endforeach
-    </ul>
+    <form action="/temporadas/{{ $temporadaId }}/episodios/assistir" method="post">
+        @csrf
+        <ul class="list-group">
+            @foreach($episodios as $episodio)
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                Episódio {{ $episodio->numero }}
+                <input type="checkbox"
+                       name="episodios[]"
+                       value="{{ $episodio->id }}"
+                       {{ $episodio->assistido ? 'checked' : '' }}>
+            </li>
+            @endforeach
+        </ul>
 
-    <button class="btn btn-primary m-2">Salvar</button>
-
-</form>
+        <button class="btn btn-primary mt-2 mb-2">Salvar</button>
+    </form>
 @endsection

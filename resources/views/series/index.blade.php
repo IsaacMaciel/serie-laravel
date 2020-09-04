@@ -1,55 +1,56 @@
 @extends('layout')
+
 @section('cabecalho')
 Séries
 @endsection
 
 @section('conteudo')
-@include('mensagem',['mensagem' => $mensagem])
-<a href={{route('form_create_serie')}} class="btn btn-dark mb-3">Adicionar </a>
-<ul class="list-group">
 
+@include('mensagem', ['mensagem' => $mensagem])
+
+@auth
+<a href="{{ route('form_criar_serie') }}" class="btn btn-dark mb-2">Adicionar</a>
+@endauth
+
+<ul class="list-group">
     @foreach($series as $serie)
     <li class="list-group-item d-flex justify-content-between align-items-center">
         <span id="nome-serie-{{ $serie->id }}">{{ $serie->nome }}</span>
 
-        <div hidden class="input-group w-50" id="input-nome-serie-{{ $serie->id }}">
+        <div class="input-group w-50" hidden id="input-nome-serie-{{ $serie->id }}">
             <input type="text" class="form-control" value="{{ $serie->nome }}">
             <div class="input-group-append">
-                <button class="btn btn-primary ml-2" onclick="editarSerie({{ $serie->id }})">
-                    <span class="material-icons ">
-                        spellcheck
-                    </span>
+                <button class="btn btn-primary" onclick="editarSerie({{ $serie->id }})">
+                    <i class="fas fa-check"></i>
                 </button>
                 @csrf
             </div>
         </div>
 
         <span class="d-flex">
+            @auth
             <button class="btn btn-info btn-sm mr-1" onclick="toggleInput({{ $serie->id }})">
-                <span class="material-icons">
-                    edit
-                </span>
+                <i class="fas fa-edit"></i>
             </button>
+            @endauth
             <a href="/series/{{ $serie->id }}/temporadas" class="btn btn-info btn-sm mr-1">
-                <span class="material-icons">
-                    input
-                </span>
+                <i class="fas fa-external-link-alt"></i>
             </a>
+            @auth
             <form method="post" action="/series/{{ $serie->id }}"
-                onsubmit="return confirm('Tem certeza que deseja remover {{ addslashes($serie->nome) }}?')">
+                  onsubmit="return confirm('Tem certeza que deseja remover {{ addslashes($serie->nome) }}?')">
                 @csrf
                 @method('DELETE')
                 <button class="btn btn-danger btn-sm">
-                    <span class="material-icons">
-                        delete
-                    </span>
+                    <i class="far fa-trash-alt"></i>
                 </button>
             </form>
+            @endauth
         </span>
     </li>
     @endforeach
-
 </ul>
+
 <script>
     function toggleInput(serieId) {
         const nomeSerieEl = document.getElementById(`nome-serie-${serieId}`);
@@ -60,7 +61,6 @@ Séries
         } else {
             inputSerieEl.removeAttribute('hidden');
             nomeSerieEl.hidden = true;
-            
         }
     }
 

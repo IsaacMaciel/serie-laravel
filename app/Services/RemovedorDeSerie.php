@@ -1,37 +1,43 @@
 <?php
 namespace App\Services;
 
-use App\Episodios;
-use App\Serie;
-use App\Temporada;
+use App\{Serie, Temporada, Episodio};
 use Illuminate\Support\Facades\DB;
 
 class RemovedorDeSerie
 {
-    public function removerSerie(int $idSerie): string
+    public function removerSerie(int $serieId): string
     {
         $nomeSerie = '';
-        DB::transaction(function () use ($idSerie, &$nomeSerie) {
-            $serie = Serie::find($idSerie);
+        DB::transaction(function () use ($serieId, &$nomeSerie) {
+            $serie = Serie::find($serieId);
             $nomeSerie = $serie->nome;
 
-            $this->removerSerieETemporadas($serie);
-
-
+            $this->removerTemporadas($serie);
+            $serie->delete();
         });
 
         return $nomeSerie;
     }
 
-    public function removerSerieETemporadas($serie): void
+    /**
+     * @param $serie
+     */
+    private function removerTemporadas(Serie $serie): void
     {
         $serie->temporadas->each(function (Temporada $temporada) {
-            $temporada->episodios()->each(function (Episodios $episodio) {
-                $episodio->delete();
-            });
+            $this->removerEpisodios($temporada);
             $temporada->delete();
         });
-            $serie->delete();
+    }
 
+    /**
+     * @param Temporada $temporada
+     */
+    private function removerEpisodios(Temporada $temporada): void
+    {
+        $temporada->episodios->each(function (Episodio $episodio) {
+            $episodio->delete();
+        });
     }
 }

@@ -9,7 +9,6 @@ class EntrarController extends Controller
 {
     public function index()
     {
-
         return view('entrar.index');
     }
 
@@ -18,7 +17,7 @@ class EntrarController extends Controller
         if (!Auth::attempt($request->only(['email', 'password']))) {
             return redirect()
                 ->back()
-                ->withErrors('Usuário ou senha incorretos');
+                ->withErrors('Usuário e/ou senha incorretos');
         }
 
         return redirect()->route('listar_series');
