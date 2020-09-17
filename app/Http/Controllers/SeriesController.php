@@ -1,25 +1,22 @@
 <?php
-
 namespace App\Http\Controllers;
 
-use App\Episodio;
+use App\Events\NovaSerie as EventsNovaSerie;
 use App\Http\Requests\SeriesFormRequest;
 use App\Serie;
 use App\Services\CriadorDeSerie;
 use App\Services\RemovedorDeSerie;
-use App\Temporada;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 
 class SeriesController extends Controller
 {
+
     public function index(Request $request)
     {
-        $series = Serie::query()
-            ->orderBy('nome')
-            ->get();
+
         $mensagem = $request->session()->get('mensagem');
 
+        $series = Serie::query()->orderBy('nome')->get();
         return view('series.index', compact('series', 'mensagem'));
     }
 
@@ -28,21 +25,31 @@ class SeriesController extends Controller
         return view('series.create');
     }
 
-    public function store(
-        SeriesFormRequest $request,
-        CriadorDeSerie $criadorDeSerie
-    ) {
-        $serie = $criadorDeSerie->criarSerie(
-            $request->nome,
-            $request->qtd_temporadas,
-            $request->ep_por_temporada
-        );
+    public function update(int $id, Request $request)
+    {
+        $novoNome = $request->nome;
 
-        $request->session()
-            ->flash(
-                'mensagem',
-                "Série {$serie->id} e suas temporadas e episódios criados com sucesso {$serie->nome}"
-            );
+        $serie = Serie::find($id);
+        $serie->nome = $novoNome;
+        $serie->save();
+    }
+
+    public function store(SeriesFormRequest $request, CriadorDeSerie $criadorDeSerie)
+    {
+        $capa = null;
+
+        if ($request->hasFile('capa')) {
+            $capa = $request->file('capa')->store('serie');
+            // dd($capa);
+        }
+
+        $serie = $criadorDeSerie->criarSerie($request->nome, $request->qtd_temporadas, $request->ep_por_temporadas, $capa);
+
+        // $users = User::all();
+        $eventoNovaSerie = new EventsNovaSerie($request->nome, $request->qtd_temporadas, $request->ep_por_temporadas);
+        event($eventoNovaSerie);
+
+        $request->session()->flash('mensagem', "Série {$serie->id} criada com sucesso {$serie->nome}");
 
         return redirect()->route('listar_series');
     }
@@ -50,19 +57,9 @@ class SeriesController extends Controller
     public function destroy(Request $request, RemovedorDeSerie $removedorDeSerie)
     {
         $nomeSerie = $removedorDeSerie->removerSerie($request->id);
-        $request->session()
-            ->flash(
-                'mensagem',
-                "Série $nomeSerie removida com sucesso"
-            );
-        return redirect()->route('listar_series');
-    }
+        $request->session()->flash('mensagem', "Serie $nomeSerie removida com sucesso");
 
-    public function editaNome(int $id, Request $request)
-    {
-        $serie = Serie::find($id);
-        $novoNome = $request->nome;
-        $serie->nome = $novoNome;
-        $serie->save();
+        return redirect()->route('listar_series');
+
     }
 }

@@ -1,43 +1,43 @@
 <?php
 namespace App\Services;
 
-use App\{Serie, Temporada, Episodio};
+use App\Episodios;
+use App\Events\SerieApagada;
+use App\Jobs\ExcluirCapaSerie;
+use App\Serie;
+use App\Temporada;
 use Illuminate\Support\Facades\DB;
 
 class RemovedorDeSerie
 {
-    public function removerSerie(int $serieId): string
+    public function removerSerie(int $idSerie): string
     {
         $nomeSerie = '';
-        DB::transaction(function () use ($serieId, &$nomeSerie) {
-            $serie = Serie::find($serieId);
+        DB::transaction(function () use ($idSerie, &$nomeSerie) {
+            $serie = Serie::find($idSerie);
+            $serieObj = (object) $serie->toArray();
             $nomeSerie = $serie->nome;
 
-            $this->removerTemporadas($serie);
-            $serie->delete();
+            $this->removerSerieETemporadas($serie);
+
+            $evento = new SerieApagada($serieObj);
+            event($evento);
+            ExcluirCapaSerie::dispatch($serieObj);
+
         });
 
         return $nomeSerie;
     }
 
-    /**
-     * @param $serie
-     */
-    private function removerTemporadas(Serie $serie): void
+    public function removerSerieETemporadas($serie): void
     {
         $serie->temporadas->each(function (Temporada $temporada) {
-            $this->removerEpisodios($temporada);
+            $temporada->episodios()->each(function (Episodios $episodio) {
+                $episodio->delete();
+            });
             $temporada->delete();
         });
-    }
+        $serie->delete();
 
-    /**
-     * @param Temporada $temporada
-     */
-    private function removerEpisodios(Temporada $temporada): void
-    {
-        $temporada->episodios->each(function (Episodio $episodio) {
-            $episodio->delete();
-        });
     }
 }

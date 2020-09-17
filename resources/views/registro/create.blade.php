@@ -1,7 +1,7 @@
 @extends('layout')
 
 @section('cabecalho')
-    Registrar-se
+Registrar-se
 @endsection
 
 @section('conteudo')

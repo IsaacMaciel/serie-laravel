@@ -7,22 +7,22 @@ use Illuminate\Database\Eloquent\Model;
 
 class Temporada extends Model
 {
-    protected $fillable = ['numero'];
     public $timestamps = false;
+    protected $fillable = ['numero'];
+
+    public function episodios()
+    {
+        return $this->hasMany(Episodios::class);
+    }
 
     public function serie()
     {
         return $this->belongsTo(Serie::class);
     }
 
-    public function episodios()
-    {
-        return $this->hasMany(Episodio::class);
-    }
-
     public function getEpisodiosAssistidos(): Collection
     {
-        return $this->episodios->filter(function (Episodio $episodio) {
+        return $this->episodios->filter(function (Episodios $episodio) {
             return $episodio->assistido;
         });
     }
